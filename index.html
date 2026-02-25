@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Absensi</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            overflow-x: hidden;
+            position: relative;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(to bottom, #e0f7fa, #ffffff);
+            z-index: -1;
+        }
+        .content-wrapper { position: relative; z-index: 1; min-height: 100vh; }
+        .navbar { background-color: #212529; padding: 1rem; color: white; }
+        .navbar-brand { font-size: 1.25rem; font-weight: bold; }
+        .header-section { background-color: rgba(25,135,84,0.1); padding: 2rem 1rem; }
+        .header-section h1 { text-align: center; margin: 0 0 2rem 0; }
+        .container { max-width: 1000px; margin: 0 auto; background-color: rgba(255,255,255,0.95); padding: 2rem; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow-x: auto; }
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
+        .form-control { width: 100%; padding: 0.5rem; font-size: 1rem; border: 1px solid #ced4da; border-radius: 0.25rem; box-sizing: border-box; }
+        .text-center { text-align: center; margin-top: 1rem; }
+        .btn { padding: 0.5rem 1rem; font-size: 1rem; border: none; border-radius: 0.25rem; cursor: pointer; margin: 0 0.5rem; }
+        .tombol-checkin { background-color: #28a745; color: white; }
+        .tombol-checkin:hover { background-color: #218838; }
+        .tombol-checkout { background-color: #ffc107; color: white; }
+        .tombol-checkout:hover { background-color: #e0a800; }
+        .tombol-rekap { background-color: #007bff; color: white; }
+        .tombol-rekap:hover { background-color: #0056b3; }
+        table { width: 100%; border-collapse: collapse; margin-top: 3rem; font-size: 1rem; table-layout: auto; }
+        th, td { padding: 0.75rem; border: 1px solid #dee2e6; text-align: center; }
+        .table-dark { background-color: #343a40; color: white; }
+        .table-primary { background-color: #cfe2ff; }
+        .table-striped tr:nth-child(even) { background-color: #f2f2f2; }
+        .tabel-section { margin-top: 2rem; padding-bottom: 3rem; }
+    </style>
+</head>
+<body onload="document.getElementById('nisn').focus();">
+<div class="content-wrapper">
+    <nav class="navbar">
+        <div class="navbar-brand">ABSEN SMKN 1 LUMAJANG</div>
+    </nav>
+
+    <div class="header-section">
+        <h1>DAFTAR HADIR SISWA</h1>
+        <div class="container">
+            <form id="form_absen" onsubmit="handleCheckIn(event)">
+                <div class="form-group">
+                    <label class="form-label">NISN</label>
+                    <input type="text" class="form-control" name="nisn" id="nisn" placeholder="Masukkan NISN" required autofocus />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Alasan (jika tidak hadir)</label>
+                    <select name="alasan" class="form-control" id="alasan">
+                        <option value="hadir" selected>Hadir</option>
+                        <option value="sakit">Sakit</option>
+                        <option value="ijin">Ijin</option>
+                    </select>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn tombol-checkin">Check In</button>
+                    <button type="button" class="btn tombol-checkout" onclick="window.location.href='CekOut.html'">Check Out</button>
+                    <button type="button" class="btn tombol-rekap" onclick="window.location.href='rekapan.html'">Rekap Absensi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="container tabel-section">
+        <table class="table-striped">
+            <thead>
+                <tr class="table-dark">
+                    <th>NISN</th>
+                    <th>Nama</th>
+                    <th>Jurusan</th>
+                    <th>Waktu Kehadiran</th>
+                    <th>Status</th>
+                    <th>Alasan</th>
+                </tr>
+            </thead>
+            <tbody id="absensi-tbody">
+                <!-- Data akan muncul setelah Check In -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous"></script>
+<script>
+    // Data dummy siswa (simulasi database)
+    const siswaDummy = [
+        { nisn: '1234567890', nama: 'Ahmad Fauzi', jurusan: 'Teknik Komputer & Jaringan' },
+        { nisn: '0987654321', nama: 'Budi Santoso', jurusan: 'Akuntansi' },
+        { nisn: '1122334455', nama: 'Citra Dewi', jurusan: 'Administrasi Perkantoran' },
+        { nisn: '5544332211', nama: 'Dian Pratama', jurusan: 'Teknik Komputer & Jaringan' },
+        { nisn: '6677889900', nama: 'Eka Susanti', jurusan: 'Akuntansi' },
+    ];
+
+    let absensiData = JSON.parse(localStorage.getItem('absensiData') || '[]');
+
+    function renderTable() {
+        const tbody = document.getElementById('absensi-tbody');
+        tbody.innerHTML = '';
+        const sorted = [...absensiData].reverse();
+        sorted.forEach(r => {
+            const tr = document.createElement('tr');
+            tr.className = 'table-primary';
+            tr.innerHTML = `
+                <td>${r.nisn}</td>
+                <td>${r.nama}</td>
+                <td>${r.jurusan}</td>
+                <td>${r.waktu_kehadiran}</td>
+                <td>${r.status}</td>
+                <td>${capitalize(r.alasan)}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function capitalize(s) {
+        return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
+    function getNow() {
+        const now = new Date();
+        return now.toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+    }
+
+    function getTimeStr() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2,'0');
+        const mm = now.getMinutes().toString().padStart(2,'0');
+        const ss = now.getSeconds().toString().padStart(2,'0');
+        return `${hh}:${mm}:${ss}`;
+    }
+
+    function handleCheckIn(e) {
+        e.preventDefault();
+        const nisn = document.getElementById('nisn').value.trim();
+        const alasan = document.getElementById('alasan').value;
+
+        // Cek duplikat (sudah check in, belum check out)
+        const duplikat = absensiData.find(d => d.nisn === nisn && !d.waktu_keluar);
+        if (duplikat) {
+            alert('NISN ini sudah Check In dan belum melakukan Check Out!');
+            return;
+        }
+
+        // Cari siswa
+        const siswa = siswaDummy.find(s => s.nisn === nisn);
+        if (!siswa) {
+            alert('NISN tidak ditemukan dalam data siswa!');
+            return;
+        }
+
+        const time = getTimeStr();
+        const status = time > '06:45:00' ? 'Terlambat' : 'Tepat Waktu';
+
+        const record = {
+            id: Date.now(),
+            nisn: siswa.nisn,
+            nama: siswa.nama,
+            jurusan: siswa.jurusan,
+            waktu_kehadiran: getNow(),
+            waktu_keluar: null,
+            status: status,
+            alasan: alasan
+        };
+
+        absensiData.push(record);
+        localStorage.setItem('absensiData', JSON.stringify(absensiData));
+        renderTable();
+        document.getElementById('nisn').value = '';
+        document.getElementById('nisn').focus();
+    }
+
+    renderTable();
+</script>
+</body>
+</html>
