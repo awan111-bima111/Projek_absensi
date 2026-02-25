@@ -1,0 +1,119 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa; /* Warna netral */
+  overflow-x: hidden;
+}
+
+.navbar {
+  background-color: #212529;
+  padding: 1rem;
+  color: white;
+}
+
+.navbar-brand {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.header-section {
+  background: linear-gradient(to bottom, #e0f7fa, #ffffff);
+  padding: 2rem 1rem;
+  margin-top: auto;
+}
+
+.header-section h1 {
+  text-align: center;
+  margin: 0 0 2rem 0;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+}
+
+.text-center {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  margin: 0 0.5rem;
+}
+
+.btn-danger {
+  background-color:#ffe033;
+  color: white;
+}
+
+.btn-primary {
+  background-color: #20d304;
+  color: white;
+}
+
+.btn-prima {
+  background-color: #f00505;
+  color: white;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 3rem;
+}
+
+th, td {
+  padding: 0.75rem;
+  border: 1px solid #dee2e6;
+  text-align: left;
+}
+
+.table-dark {
+  background-color: #343a40;
+  color: white;
+}
+
+.table-primary {
+  background-color: #cfe2ff;
+}
+
+.table-striped tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.btn-custom {
+  background-color: #05acf0;
+  border-color: #05acf0;
+}
+
+.btn-custom:hover {
+  background-color: #0394c6;
+  border-color: #0394c6;
+}
